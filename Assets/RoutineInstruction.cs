@@ -1,6 +1,6 @@
 using System;
 
-namespace Game.Plugins.ZUtils.Routines
+namespace Routines
 {
     public class RoutineInstruction
     {

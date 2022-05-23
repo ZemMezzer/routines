@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Plugins.ZUtils.Routines
+namespace Routines
 {
     public static class Routine
     {

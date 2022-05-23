@@ -1,6 +1,6 @@
 using System;
 
-namespace Game.Plugins.ZUtils.Routines.Instructions
+namespace Routines.Instructions
 {
     public sealed class WaitUntilInstruction : RoutineInstruction
     {

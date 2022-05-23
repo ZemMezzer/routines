@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Plugins.ZUtils.Routines
+namespace Routines
 {
     public class RoutineHandler : MonoBehaviour
     {

@@ -1,4 +1,4 @@
-namespace Game.Plugins.ZUtils.Routines.Instructions
+namespace Routines.Instructions
 {
     public class EmptyInstruction : RoutineInstruction
     {

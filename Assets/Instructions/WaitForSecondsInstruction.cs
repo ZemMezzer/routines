@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Plugins.ZUtils.Routines.Instructions
+namespace Routines.Instructions
 {
     public sealed class WaitForSecondsInstruction : RoutineInstruction
     {

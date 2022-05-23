@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Game.Plugins.ZUtils.Routines
+namespace Routines
 {
     public class RoutineSequence : IEnumerator
     {

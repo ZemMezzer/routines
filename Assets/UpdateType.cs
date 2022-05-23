@@ -1,4 +1,4 @@
-namespace Game.Plugins.ZUtils.Routines
+namespace Routines
 {
     public enum UpdateType
     {
