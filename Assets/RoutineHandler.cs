@@ -6,79 +6,61 @@ namespace Routines
 {
     public class RoutineHandler : MonoBehaviour
     {
-        private readonly List<RoutineSequence> fixedUpdateRoutineSequences = new List<RoutineSequence>();
-        private readonly List<RoutineSequence> updateRoutineSequences = new List<RoutineSequence>();
-        private readonly List<RoutineSequence> lateUpdateRoutineSequences = new List<RoutineSequence>();
-
-        private readonly Queue<RoutineSequence> fixedUpdateRoutineSequencesToRemove = new Queue<RoutineSequence>();
-        private readonly Queue<RoutineSequence> updateRoutineSequencesToRemove = new Queue<RoutineSequence>();
-        private readonly Queue<RoutineSequence> lateUpdateRoutineSequencesToRemove = new Queue<RoutineSequence>();
+        private readonly Dictionary<UpdateType, List<RoutineSequence>> sequences = new Dictionary<UpdateType, List<RoutineSequence>>();
 
         public void AddSequence(RoutineSequence sequence, UpdateType updateType)
         {
-            switch (updateType)
+            if (!sequences.ContainsKey(updateType))
             {
-                case UpdateType.Update:
-                    updateRoutineSequences.Add(sequence);
-                    break;
-                case UpdateType.FixedUpdate:
-                    fixedUpdateRoutineSequences.Add(sequence);
-                    break;
-                case UpdateType.LateUpdate:
-                    lateUpdateRoutineSequences.Add(sequence);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(updateType), updateType, null);
+                sequences.Add(updateType, new List<RoutineSequence>());
             }
+
+            sequences[updateType].Add(sequence);
         }
 
         public void RemoveSequence(RoutineSequence sequence, UpdateType updateType)
         {
-            switch (updateType)
-            {
-                case UpdateType.Update:
-                    updateRoutineSequences.Remove(sequence);
-                    break;
-                case UpdateType.FixedUpdate:
-                    fixedUpdateRoutineSequences.Remove(sequence);
-                    break;
-                case UpdateType.LateUpdate:
-                    lateUpdateRoutineSequences.Remove(sequence);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(updateType), updateType, null);
-            }
+            sequences[updateType].Remove(sequence);
         }
 
         public void ClearSequences()
         {
-            updateRoutineSequences.Clear();
-            fixedUpdateRoutineSequences.Clear();
-            lateUpdateRoutineSequences.Clear();
+            foreach (var sequenceKeyValuePair in sequences)
+            {
+                sequenceKeyValuePair.Value.Clear();
+            }
         }
         
         private void FixedUpdate()
         {
-            MoveNext(fixedUpdateRoutineSequences, fixedUpdateRoutineSequencesToRemove);
-            RemoveSequences(fixedUpdateRoutineSequences, fixedUpdateRoutineSequencesToRemove);
+            if (sequences.ContainsKey(UpdateType.FixedUpdate))
+            {
+                MoveNext(sequences[UpdateType.FixedUpdate]);
+            }
         }
 
         private void Update()
         {
-            MoveNext(updateRoutineSequences, updateRoutineSequencesToRemove);
-            RemoveSequences(updateRoutineSequences, updateRoutineSequencesToRemove);
+            if (sequences.ContainsKey(UpdateType.Update))
+            {
+                MoveNext(sequences[UpdateType.Update]);
+            }
         }
 
         private void LateUpdate()
         {
-            MoveNext(lateUpdateRoutineSequences, lateUpdateRoutineSequencesToRemove);
-            RemoveSequences(lateUpdateRoutineSequences, lateUpdateRoutineSequencesToRemove);
+            if (sequences.ContainsKey(UpdateType.LateUpdate))
+            {
+                MoveNext(sequences[UpdateType.LateUpdate]);
+            }
         }
 
-        private void MoveNext(List<RoutineSequence> instructionsList, Queue<RoutineSequence> instructionsToRemove)
+        private void MoveNext(List<RoutineSequence> instructionsList)
         {
-            foreach (var instructionsSequence in instructionsList)
+            for (int i = instructionsList.Count - 1; i >= 0; i--)
             {
+                var instructionsSequence = instructionsList[i];
+                
                 if (!instructionsSequence.MoveNext())
                 {
                     if (instructionsSequence.IsRepeating)
@@ -87,20 +69,9 @@ namespace Routines
                     }
                     else
                     {
-                        instructionsToRemove.Enqueue(instructionsSequence);
+                        instructionsList.RemoveAt(i);
                     }
                 }
-            }
-        }
-
-
-        private void RemoveSequences(List<RoutineSequence> instructionsList, Queue<RoutineSequence> instructionsToRemove)
-        {
-            int count = instructionsToRemove.Count;
-
-            for (int i = 0; i < count; i++)
-            {
-                instructionsList.Remove(instructionsToRemove.Dequeue());
             }
         }
     }
